@@ -3,6 +3,7 @@
 import "./globals.css";
 import React, { useEffect, useState } from "react";
 import Footer from "./components/footer";
+import Header from "./components/header";
 
 export default function RootLayout({ children }) {
   const [shouldHideFooter, setShouldHideFooter] = useState(false);
@@ -38,6 +39,7 @@ export default function RootLayout({ children }) {
         />
       </head>
       <body className="flex flex-col min-h-screen">
+        {!shouldHideFooter && <Header />}
         <main className="flex-1">{children}</main>
         {!shouldHideFooter && <Footer />}
       </body>

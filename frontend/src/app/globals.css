@@ -17,7 +17,7 @@
   background-color: #0056b3;
 }
 
-footer {
+/*footer {
   display: flex !important;
   justify-content: space-around !important;
   align-items: center !important;
@@ -28,6 +28,7 @@ footer a {
   flex: 1 !important;
   text-align: center !important;
 }
+*/
 
 /* カスタムテキストシャドウ */
 .text-shadow {

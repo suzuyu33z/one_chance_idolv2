@@ -1,39 +1,70 @@
-import React from "react";
+"use client";
+
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
+import '../globals.css'; // グローバルCSSをインポート
 
 export default function Footer() {
+  const [isVisible, setIsVisible] = useState(true);
+  const [lastScrollY, setLastScrollY] = useState(0);
+
+  const handleScroll = () => {
+    if (typeof window !== 'undefined') {
+      if (window.scrollY < lastScrollY) {
+        // 下にスクロール
+        setIsVisible(false);
+      } else {
+        // 上にスクロール
+        setIsVisible(true);
+      }
+      setLastScrollY(window.scrollY);
+    }
+  };
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      window.addEventListener('scroll', handleScroll);
+
+      return () => {
+        window.removeEventListener('scroll', handleScroll);
+      };
+    }
+  }, [lastScrollY]);
+
   return (
-    <footer className="w-full bg-green-100 py-4 flex justify-around items-center">
-      <Link href="/home" className="flex flex-col items-center">
-        <span className="material-icons" style={{ fontSize: "24px" }}>
-          home
-        </span>
-        <p className="text-xs">ホーム</p>
-      </Link>
-      <Link href="/home/history" className="flex flex-col items-center">
-        <span className="material-icons" style={{ fontSize: "24px" }}>
-          history
-        </span>
-        <p className="text-xs">マッチ履歴</p>
-      </Link>
-      <Link href="/home/walksearch" className="flex flex-col items-center">
-        <span className="material-icons" style={{ fontSize: "24px" }}>
-          search
-        </span>
-        <p className="text-xs">犬検索</p>
-      </Link>
-      <Link href="/home/walkregi" className="flex flex-col items-center">
-        <span className="material-icons" style={{ fontSize: "24px" }}>
-          pets
-        </span>
-        <p className="text-xs">散歩登録</p>
-      </Link>
-      <Link href="/home/edition" className="flex flex-col items-center">
-        <span className="material-icons" style={{ fontSize: "24px" }}>
-          person
-        </span>
-        <p className="text-xs">プロフ変更</p>
-      </Link>
+    <footer className={`bg-[#A8D38D] py-2 px-0.5 border-t-2 border-[#c5e1a5] text-center fixed bottom-0 w-full z-1000 overflow-x-auto transition-transform duration-300 ${isVisible ? 'translate-y-0' : 'translate-y-full'}`}>
+      <ul className="list-none flex justify-around items-center w-full p-0 m-0 flex-nowrap">
+        <Link href="/home">
+          <li className="cursor-pointer flex-1 text-center min-w-[20px] whitespace-nowrap text-white flex flex-col items-center text-shadow font-bold text-xs">
+            <span className="material-icons">home</span>
+            <p>ホーム</p>
+          </li>
+        </Link>
+        <Link href="/home/history">
+          <li className="cursor-pointer flex-1 text-center min-w-[20px] whitespace-nowrap text-white flex flex-col items-center text-shadow font-bold text-xs">
+            <span className="material-icons">history</span>
+            <p>マッチ履歴</p>
+          </li>
+        </Link>
+        <Link href="/home/walksearch">
+          <li className="cursor-pointer flex-1 text-center min-w-[20px] whitespace-nowrap text-white flex flex-col items-center text-shadow font-bold text-xs">
+            <span className="material-icons">search</span>
+            <p>犬検索</p>
+          </li>
+        </Link>
+        <Link href="/home/walkregi">
+          <li className="cursor-pointer flex-1 text-center min-w-[20px] whitespace-nowrap text-white flex flex-col items-center text-shadow font-bold text-xs">
+            <span className="material-icons">pets</span>
+            <p>散歩登録</p>
+          </li>
+        </Link>
+        <Link href="/home/edition">
+          <li className="cursor-pointer flex-1 text-center min-w-[20px] whitespace-nowrap text-white flex flex-col items-center text-shadow font-bold text-xs">
+            <span className="material-icons">person</span>
+            <p>プロフ変更</p>
+          </li>
+        </Link>
+      </ul>
     </footer>
   );
 }
