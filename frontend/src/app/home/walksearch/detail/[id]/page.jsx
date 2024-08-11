@@ -82,10 +82,7 @@ export default function WalkDetailPage() {
   }
 
   return (
-    <div className="flex flex-col min-h-screen bg-white">
-      <header className="w-full bg-green-100 py-4 text-center text-green-700 font-bold text-lg">
-        わん-Chance-アイドル
-      </header>
+    <div className="flex flex-col min-h-screen bg-white mt-8">
 
       <main className="flex-1 overflow-y-auto w-full px-4 py-4">
         <div className="mb-4">

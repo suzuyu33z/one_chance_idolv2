@@ -1,6 +1,8 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+@import url('https://fonts.googleapis.com/css2?family=Kosugi+Maru&display=swap');
+
 
 .button-link {
   display: block;
@@ -34,3 +36,6 @@ footer a {
 .text-shadow {
   text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
 }
+
+
+

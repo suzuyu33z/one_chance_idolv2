@@ -46,12 +46,9 @@ export default function UserWalkListPage() {
   return (
     <div className="flex flex-col min-h-screen bg-white">
       {/* ヘッダー */}
-      <header className="w-full bg-green-100 py-4 text-center text-green-700 font-bold text-lg">
-        わん-Chance-アイドル
-      </header>
 
       {/* メインコンテンツ */}
-      <main className="flex-1 overflow-y-auto w-full">
+      <main className="flex-1 overflow-y-auto w-full mt-16">
         <div className="flex flex-col items-center px-4 pt-4 pb-8">
           {/* タイトル */}
           <h2 className="text-lg font-bold mb-4">わんちゃんに会う予定</h2>

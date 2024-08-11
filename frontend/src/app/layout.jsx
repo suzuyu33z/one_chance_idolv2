@@ -9,20 +9,25 @@ export default function RootLayout({ children }) {
   const [shouldHideFooter, setShouldHideFooter] = useState(false);
 
   useEffect(() => {
+    const hideFooterPaths = [
+      "/login",
+      "/new",
+      "/",
+      "/new/visitor",
+      "/new/owner",
+    ];
+
     const handleRouteChange = () => {
-      const path = window.location.pathname;
-      const hideFooterPaths = [
-        "/login",
-        "/new",
-        "/",
-        "/new/visitor",
-        "/new/owner",
-      ];
-      setShouldHideFooter(hideFooterPaths.includes(path));
+      if (typeof window !== "undefined") {
+        const path = window.location.pathname;
+        setShouldHideFooter(hideFooterPaths.includes(path));
+      }
     };
 
-    // 初期ロードとルート変更を監視
+    // 初期ロード時に現在のパスをチェック
     handleRouteChange();
+
+    // ブラウザの戻る・進むボタンに対応
     window.addEventListener("popstate", handleRouteChange);
 
     return () => {
@@ -46,3 +51,5 @@ export default function RootLayout({ children }) {
     </html>
   );
 }
+
+

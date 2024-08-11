@@ -45,19 +45,15 @@ export default function WalkListPage() {
 
   return (
     <div className="flex flex-col min-h-screen bg-white">
-      {/* ヘッダー */}
-      <header className="w-full bg-green-100 py-4 text-center text-green-700 font-bold text-lg">
-        わん-Chance-アイドル
-      </header>
 
       {/* メインコンテンツ */}
-      <main className="flex-1 overflow-y-auto w-full">
+      <main className="flex-1 overflow-y-auto w-full mt-8">
         <div className="flex flex-col items-center px-4 pt-4 pb-8">
           {/* 検索ボックス */}
           <input
             type="text"
             placeholder="検索"
-            className="w-full p-2 rounded-md border border-gray-300 mb-4 text-white bg-black"
+            className="w-full p-2 rounded-md border border-gray-300 mb-4 text-black bg-white"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
@@ -79,13 +75,6 @@ export default function WalkListPage() {
           )}
         </div>
       </main>
-
-      {/* フロートさせたフッター */}
-      <footer className="fixed bottom-0 w-full bg-green-100 py-4 text-center text-green-700">
-        <Link href="/logout" className="underline text-sm">
-          ログアウト
-        </Link>
-      </footer>
     </div>
   );
 }

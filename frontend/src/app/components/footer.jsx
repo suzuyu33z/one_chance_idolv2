@@ -10,7 +10,7 @@ export default function Footer() {
 
   const handleScroll = () => {
     if (typeof window !== 'undefined') {
-      if (window.scrollY < lastScrollY) {
+      if (window.scrollY > lastScrollY) {
         // 下にスクロール
         setIsVisible(false);
       } else {
@@ -32,7 +32,7 @@ export default function Footer() {
   }, [lastScrollY]);
 
   return (
-    <footer className={`bg-[#A8D38D] py-2 px-0.5 border-t-2 border-[#c5e1a5] text-center fixed bottom-0 w-full z-1000 overflow-x-auto transition-transform duration-300 ${isVisible ? 'translate-y-0' : 'translate-y-full'}`}>
+    <footer className={`bg-[#A8D38D] py-2 px-0.5 border-t-2 border-[#c5e1a5] text-center fixed bottom-0 w-full z-[1000] overflow-x-auto transition-transform duration-300 ${isVisible ? 'translate-y-0' : 'translate-y-full'}`}>
       <ul className="list-none flex justify-around items-center w-full p-0 m-0 flex-nowrap">
         <Link href="/home">
           <li className="cursor-pointer flex-1 text-center min-w-[20px] whitespace-nowrap text-white flex flex-col items-center text-shadow font-bold text-xs">
