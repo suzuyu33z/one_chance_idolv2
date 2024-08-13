@@ -1,8 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { useParams, useRouter } from "next/navigation"; // useRouterをインポート
-import Link from "next/link";
-import useAuth from "../../../../utils/useAuth"; // useAuthをインポート
+import { useParams, useRouter } from "next/navigation";
+import useAuth from "../../../../utils/useAuth";
 
 export default function WalkDetailPage() {
   const isAuthenticated = useAuth(); // 認証状態を確認
@@ -82,82 +81,89 @@ export default function WalkDetailPage() {
   }
 
   return (
-    <div className="flex flex-col min-h-screen bg-white mt-8">
+    <div className="flex flex-col min-h-screen bg-gray-50 mt-4"> {/* 上部にマージンを追加 */}
+      <main className="flex-1 w-full px-6 py-8 mb-24">
+        <div className="space-y-6">
+          <div className="bg-white p-4 rounded-lg shadow-md">
+            {/* わんちゃん、日時、散歩についてを1つのBoxにまとめる */}
+            <div className="space-y-4">
+              {walkDetail.dogs.map((dog, index) => (
+                <div key={index} className="flex items-start">
+                  <img
+                    src={dog.image} // ここでCloudinaryのURLを直接使用
+                    alt={dog.name}
+                    className="w-24 h-24 object-cover rounded-lg shadow-md mr-4"
+                  />
+                  <div>
+                    <p className="text-md font-semibold text-gray-800">
+                      {dog.name} / {dog.breed} / {dog.age}歳 / {dog.gender}
+                    </p>
+                    <p className="text-md text-gray-600 mt-1">{dog.description}</p>
+                  </div>
+                </div>
+              ))}
 
-      <main className="flex-1 overflow-y-auto w-full px-4 py-4">
-        <div className="mb-4">
-          <h2 className="text-xl font-bold">日時</h2>
-          <p>
-            {walkDetail.date} {walkDetail.time_start}〜{walkDetail.time_end}
-          </p>
-        </div>
-        <div className="mb-4">
-          <h2 className="text-xl font-bold">場所</h2>
-          <p>{walkDetail.location}</p>
-        </div>
-        <div className="mb-4">
-          <h2 className="text-xl font-bold">散歩について</h2>
-          <p>{walkDetail.description}</p>
-        </div>
-        <div className="mb-4">
-          <h2 className="text-xl font-bold">オーナー情報</h2>
-          <p>名前: {walkDetail.owner_name}</p>
-          <p>自己紹介: {walkDetail.owner_bio}</p>
-        </div>
-        <div className="mb-4">
-          <h2 className="text-xl font-bold">わんちゃん</h2>
-          {walkDetail.dogs.map((dog, index) => (
-            <div key={index} className="mb-2">
-              <p>
-                {dog.name} / {dog.breed} / {dog.age}歳 / {dog.gender}
-              </p>
-              <img
-                src={dog.image} // ここでCloudinaryのURLを直接使用
-                alt={dog.name}
-                className="w-48 h-48 object-cover"
-              />
-              <p>{dog.description}</p>
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-gray-500 text-sm">日時</p>
+                  <p className="text-lg font-semibold text-gray-800">
+                    {walkDetail.date} {walkDetail.time_start}〜{walkDetail.time_end}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-gray-500 text-sm">場所</p>
+                  <p className="text-lg font-semibold text-gray-800">{walkDetail.location}</p>
+                </div>
+              </div>
+
+              <div>
+                <p className="text-gray-500 text-sm">散歩について</p>
+                <p className="text-lg text-gray-800 mt-1">{walkDetail.description}</p>
+              </div>
             </div>
-          ))}
+          </div>
+
+          <div className="bg-white p-4 rounded-lg shadow-md mt-6">
+            <p className="text-gray-500 text-sm">オーナー情報</p>
+            <p className="text-lg font-semibold text-gray-800 mt-1">名前: {walkDetail.owner_name}</p>
+            <p className="text-md text-gray-800 mt-1">自己紹介: {walkDetail.owner_bio}</p>
+          </div>
         </div>
-        <div className="mb-4">
-          <h2 className="text-xl font-bold">コメント</h2>
-          <div className="bg-black text-white p-4 rounded-md mb-4">
+
+        <div className="mt-8">
+          <h2 className="text-xl font-semibold text-gray-800 mb-4">コメント</h2>
+          <div className="bg-gray-100 text-gray-800 p-4 rounded-lg mb-6 shadow-inner">
             {messages.length > 0 ? (
               messages.map((message, index) => (
-                <div key={index} className="mb-2">
-                  <p className="text-sm font-bold">{message.sender_name}</p>
-                  <p>{message.message}</p>
-                  <p className="text-sm text-gray-500">{message.timestamp}</p>
+                <div key={index} className="mb-4">
+                  <p className="text-sm font-semibold text-gray-700">{message.sender_name}</p>
+                  <p className="text-sm text-gray-600">{message.message}</p>
+                  <p className="text-xs text-gray-500">{message.timestamp}</p>
                 </div>
               ))
             ) : (
-              <p>コメントがありません。</p>
+              <p className="text-sm text-gray-600">コメントがありません。</p>
             )}
           </div>
         </div>
-        <textarea
-          className="w-full p-2 rounded-md border border-gray-300 mb-2" // 下部に少し間隔をあけるために margin-bottom を追加
-          rows="4"
-          placeholder="ここにコメントを入力..."
-          value={newMessage}
-          onChange={(e) => setNewMessage(e.target.value)} // 入力内容をnewMessageに設定
-        ></textarea>
-        <div className="flex justify-center mb-4">
-          {" "}
-          {/* 中央寄せのためのflexboxコンテナ */}
+        <div className="flex items-center space-x-4 mb-6">
+          <input
+            type="text"
+            className="flex-1 p-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#A8D38D] placeholder-gray-400"
+            placeholder="ここにコメントを入力..."
+            value={newMessage}
+            onChange={(e) => setNewMessage(e.target.value)} // 入力内容をnewMessageに設定
+          />
           <button
-            className="bg-green-500 text-white py-2 px-4 rounded" // テキストエリアに密接させるために margin を除去
+            className="bg-[#A8D38D] text-white py-2 px-4 rounded-lg font-semibold hover:bg-[#96c781] transition-colors shadow-md"
             onClick={handleSendMessage} // クリックでコメント送信ハンドラーを呼び出す
           >
-            コメントを送信
+            送信
           </button>
         </div>
-        <div className="flex justify-center mt-4">
-          {" "}
-          {/* ボタンの間に余白を設定 */}
+        <div className="flex justify-center">
           <button
-            className="bg-blue-500 text-white py-2 px-4 rounded"
+            className="bg-[#5A8D75] text-white py-2 px-6 rounded-lg font-semibold hover:bg-[#487760] transition-colors shadow-md"
             onClick={handleRequest} // "申請する"ボタンをクリックしたときに呼ばれる
           >
             申請する

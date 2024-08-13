@@ -67,66 +67,70 @@ export default function VisitorRegistration() {
   };
 
   return (
-    <div className="p-4">
-      <h1 className="text-2xl font-bold mb-4">
-        新規登録（ワンちゃん飼っていない人）
+    <div className="max-w-md mx-auto bg-white p-6 rounded-lg shadow-md mt-8">
+      <h1 className="text-2xl font-bold mb-6 text-center text-[#75A05A]">
+        新規登録
       </h1>
       <form onSubmit={handleSubmit}>
         <div className="mb-4">
-          <label className="block text-gray-700">名前</label>
+          <label className="block text-gray-700 font-semibold mb-2">名前</label>
           <input
             type="text"
             name="name"
             value={formData.name}
             onChange={handleChange}
-            className="w-full border border-gray-300 p-2 rounded text-white"
+            className="w-full border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#A8D38D] placeholder-gray-400"
+            placeholder="例: 山田 太郎"
             required
           />
         </div>
         <div className="mb-4">
-          <label className="block text-gray-700">メールアドレス</label>
+          <label className="block text-gray-700 font-semibold mb-2">メールアドレス</label>
           <input
             type="email"
             name="email"
             value={formData.email}
             onChange={handleChange}
-            className="w-full border border-gray-300 p-2 rounded text-white"
+            className="w-full border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#A8D38D] placeholder-gray-400"
+            placeholder="例: example@example.com"
             required
           />
         </div>
         <div className="mb-4">
-          <label className="block text-gray-700">パスワード</label>
+          <label className="block text-gray-700 font-semibold mb-2">パスワード</label>
           <input
             type="password"
             name="password"
             value={formData.password}
             onChange={handleChange}
-            className="w-full border border-gray-300 p-2 rounded text-white"
+            className="w-full border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#A8D38D] placeholder-gray-400"
+            placeholder="6文字以上のパスワード"
             required
           />
         </div>
         <div className="mb-4">
-          <label className="block text-gray-700">自己紹介</label>
+          <label className="block text-gray-700 font-semibold mb-2">自己紹介</label>
           <textarea
             name="bio"
             value={formData.bio}
             onChange={handleChange}
-            className="w-full border border-gray-300 p-2 rounded text-white"
+            className="w-full border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#A8D38D] placeholder-gray-400"
+            placeholder="自己紹介を記入してください"
           />
         </div>
         <div className="mb-4">
-          <label className="block text-gray-700">
+          <label className="block text-gray-700 font-semibold mb-2">
             プロフィール画像 (ファイルを選択)
           </label>
           <input
             type="file"
             onChange={handleFileChange} // 画像アップロード処理を追加
-            className="w-full border border-gray-300 p-2 rounded text-white"
+            className="w-full border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#A8D38D] placeholder-gray-400"
           />
         </div>
         <button
           type="submit"
-          className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-700"
+          className="w-full bg-[#A8D38D] text-white p-3 rounded-lg font-semibold hover:bg-[#96c781] transition-colors"
         >
           登録
         </button>
@@ -134,3 +138,4 @@ export default function VisitorRegistration() {
     </div>
   );
 }
+
