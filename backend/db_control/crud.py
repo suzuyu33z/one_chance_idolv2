@@ -14,7 +14,7 @@ from db_control.mymodels import User, Dog, Breed, Walk, Location, Request, Messa
 from datetime import datetime
 
 #user登録するためのもの
-def register_user(mymodel, values):
+def register_user_and_dogs(mymodel, user_values, dogs):
     # session構築
     Session = sessionmaker(bind=engine)
     session = Session()
@@ -22,33 +22,50 @@ def register_user(mymodel, values):
     # Userモデルかどうかを確認し、パスワードをハッシュ化
     if mymodel == User:
         user = User(
-            name=values["name"],
-            email=values["email"],
-            image=values["image"],
-            bio=values["bio"],
-            dog_number=values["dog_number"],
-            points=values["points"]
+            name=user_values["name"],
+            email=user_values["email"],
+            image=user_values["image"],
+            bio=user_values["bio"],
+            dog_number=user_values["dog_number"],
+            points=user_values["points"]
         )
-        user.set_password(values["password"])  # パスワードをハッシュ化
+        user.set_password(user_values["password"])  # パスワードをハッシュ化
+
         try:
             # トランザクションを開始
             with session.begin():
                 session.add(user)
+                session.flush()  # user_idを取得するためにフラッシュ
+
+                # 犬の情報を登録
+                for dog in dogs:
+                    new_dog = Dog(
+                        owner_user_id=user.user_id,
+                        dog_name=dog["dog_name"],
+                        dog_age=dog["dog_age"],
+                        dog_sex=dog["dog_sex"],
+                        breed_id=dog["breed_id"],
+                        image=dog["image"],
+                        description=dog["description"]
+                    )
+                    session.add(new_dog)
+
         except sqlalchemy.exc.IntegrityError:
-            print("エラー: ユーザー登録に失敗しました")
+            print("エラー: ユーザーと犬の登録に失敗しました")
             session.rollback()
-            return "Failed to register user: IntegrityError"
+            return "Failed to register user and dogs: IntegrityError"
         finally:
             # セッションを閉じる
             session.close()
-        return "User registered successfully"
+
+        return "User and dogs registered successfully"
     else:
         # 他のモデルの場合、通常のインサートを実行
-        query = insert(mymodel).values(values)
+        query = insert(mymodel).values(user_values)
         try:
             # トランザクションを開始
             with session.begin():
-                result = session.execute(query)
+                session.execute(query)
         except sqlalchemy.exc.IntegrityError:
             print("エラー: 登録に失敗しました")
             session.rollback()
@@ -58,6 +75,7 @@ def register_user(mymodel, values):
             session.close()
 
         return "Registered successfully"
+
 
 #Walkを表示するためのコード
 def get_all_walks():
@@ -317,147 +335,105 @@ def create_walk_request(walk_id, requesting_user_id, requested_time):
     finally:
         session.close()
 
+#犬登録時のBreedテーブル呼び出し
+def get_all_breeds():
+    Session = sessionmaker(bind=engine)
+    session = Session()
+    try:
+        breeds = session.query(Breed).all()
+        breed_list = [{"breed_id": breed.breed_id, "breed_name": breed.breed_name} for breed in breeds]
+        return breed_list
+    except Exception as e:
+        print(f"Error fetching breeds: {e}")
+        return []
+    finally:
+        session.close()
 
-
-#これより下は、サンプルコードのもの
-def myinsert(mymodel, values):
-    # session構築
+# 犬情報登録用の関数
+def register_dogs(user_id, dogs):
     Session = sessionmaker(bind=engine)
     session = Session()
 
-    query = insert(mymodel).values(values)
     try:
-        # トランザクションを開始
-        with session.begin():
-            # データの挿入
-            result = session.execute(query)
-    except sqlalchemy.exc.IntegrityError:
-        print("一意制約違反により、挿入に失敗しました")
+        for dog in dogs:
+            new_dog = Dog(
+                owner_user_id=user_id,
+                dog_name=dog["dog_name"],
+                dog_age=dog["dog_age"],
+                dog_sex=dog["dog_sex"],
+                breed_id=dog["breed_id"],
+                image=dog["image"],
+                description=dog["description"]
+            )
+            session.add(new_dog)
+        session.commit()
+        return True
+    except Exception as e:
         session.rollback()
- 
-    # セッションを閉じる
-    session.close()
-    return "inserted"
- 
-def myselect(mymodel, customer_id):
-    # session構築
-    Session = sessionmaker(bind=engine)
-    session = Session()
-    query = session.query(mymodel).filter(mymodel.customer_id == customer_id)
-    try:
-        # トランザクションを開始
-        with session.begin():
-            result = query.all()
-        # 結果をオブジェクトから辞書に変換し、リストに追加
-        result_dict_list = []
-        for customer_info in result:
-            result_dict_list.append({
-                "customer_id": customer_info.customer_id,
-                "customer_name": customer_info.customer_name,
-                "age": customer_info.age,
-                "gender": customer_info.gender
-            })
-        # リストをJSONに変換
-        result_json = json.dumps(result_dict_list, ensure_ascii=False)
-    except sqlalchemy.exc.IntegrityError:
-        print("一意制約違反により、挿入に失敗しました")
+        print(f"Error registering dogs: {e}")  # エラーメッセージをログに出力
+        return str(e)  # エラーをクライアントに返す
+    finally:
+        session.close()
 
-    # セッションを閉じる
-    session.close()
-    return result_json
-
-
-def myselectAll(mymodel):
-    # session構築
-    Session = sessionmaker(bind=engine)
-    session = Session()
-    query = select(mymodel)
-    try:
-        # トランザクションを開始
-        with session.begin():
-            df = pd.read_sql_query(query, con=engine)
-            result_json = df.to_json(orient='records', force_ascii=False)
-
-    except sqlalchemy.exc.IntegrityError:
-        print("一意制約違反により、挿入に失敗しました")
-        result_json = None
-
-    # セッションを閉じる
-    session.close()
-    return result_json
-
-def myupdate(mymodel, values):
-    # session構築
+#散歩の登録
+def register_walk(walk_values, dog_ids):
     Session = sessionmaker(bind=engine)
     session = Session()
 
-    customer_id = values.pop("customer_id")
-
-    query = (
-    update(mymodel)
-    .where(mymodel.customer_id == customer_id)
-    .values(**values)
-    )
-
-
     try:
-        # トランザクションを開始
-        with session.begin():
-            result = session.execute(query)
-    except sqlalchemy.exc.IntegrityError:
-        print("一意制約違反により、挿入に失敗しました")
+        new_walk = Walk(
+            owner_user_id=walk_values["owner_user_id"],
+            description=walk_values["description"],
+            time_start=walk_values["time_start"],
+            time_end=walk_values["time_end"],
+            location_id=walk_values["location_id"],
+            points_required=walk_values["points_required"]
+        )
+
+        session.add(new_walk)
+        session.flush()  # walk_idを取得するためにフラッシュ
+
+        # WalkDogListに犬を追加
+        for dog_id in dog_ids:
+            walk_dog = WalkDogList(
+                walk_id=new_walk.walk_id,
+                dog_id=dog_id
+            )
+            session.add(walk_dog)
+
+        session.commit()
+        return "Walk and dogs registered successfully"
+    except Exception as e:
         session.rollback()
-    # セッションを閉じる
-    session.close()
-    return "put"
+        print(f"Error registering walk and dogs: {e}")
+        return str(e)
+    finally:
+        session.close()
 
-def mydelete(mymodel, customer_id):
-    # session構築
+#location取得の関数
+def get_all_locations():
     Session = sessionmaker(bind=engine)
     session = Session()
-    query = delete(mymodel).where(mymodel.customer_id==customer_id)
     try:
-        # トランザクションを開始
-        with session.begin():
-            result = session.execute(query)
-    except sqlalchemy.exc.IntegrityError:
-        print("一意制約違反により、挿入に失敗しました")
-        session.rollback()
+        locations = session.query(Location).all()
+        location_list = [{"location_id": loc.location_id, "location_name": loc.location_name, "description": loc.description} for loc in locations]
+        return location_list
+    except Exception as e:
+        print(f"Error fetching locations: {e}")
+        return []
+    finally:
+        session.close()
 
-def myinsertMessage(values):
+#ユーザーの犬リスト取得
+def get_dogs_by_user(user_id):
     Session = sessionmaker(bind=engine)
     session = Session()
-
-    query = insert(Messages).values(values)
     try:
-        with session.begin():
-            result = session.execute(query)
-    except sqlalchemy.exc.IntegrityError:
-        print("一意制約違反により、挿入に失敗しました")
-        session.rollback()
-
-    session.close()
-    return "message inserted"
-
-def myselectMessagesByCustomerId(mymodel, customer_id):
-    Session = sessionmaker(bind=engine)
-    session = Session()
-    query = session.query(mymodel).filter(mymodel.customer_id == customer_id)
-    try:
-        with session.begin():
-            result = query.all()
-        result_dict_list = []
-        for message_info in result:
-            result_dict_list.append({
-                "id": message_info.id,
-                "customer_id": message_info.customer_id,
-                "message": message_info.message,
-                "timestamp": message_info.timestamp.isoformat()  # datetimeオブジェクトを文字列に変換
-            })
-        result_json = json.dumps(result_dict_list, ensure_ascii=False)
-    except sqlalchemy.exc.IntegrityError:
-        print("一意制約違反により、選択に失敗しました")
-
-    # セッションを閉じる
-    session.close()
-    return result_json
+        dogs = session.query(Dog).filter(Dog.owner_user_id == user_id).all()
+        dog_list = [{"dog_id": dog.dog_id, "dog_name": dog.dog_name, "breed_id": dog.breed_id, "dog_age": dog.dog_age, "dog_sex": dog.dog_sex, "description": dog.description} for dog in dogs]
+        return dog_list
+    except Exception as e:
+        print(f"Error fetching dogs for user {user_id}: {e}")
+        return []
+    finally:
+        session.close()

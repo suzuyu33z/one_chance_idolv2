@@ -33,11 +33,11 @@ def index():
 
 #新規登録時のコード（visitor）
 @app.route("/api/register", methods=["POST"])
-def register_user():
+def register_user_and_dogs():
     data = request.get_json()
     print("Received form data:", data)
 
-    values = {
+    user_values = {
         "name": data.get("name"),
         "email": data.get("email"),
         "password": data.get("password"),
@@ -47,12 +47,17 @@ def register_user():
         "points": data.get("points", 0)
     }
 
-    result = crud.register_user(mymodels.User, values)  # CRUD関数を呼び出す
+    # 犬の情報を取得
+    dogs = data.get("dogs", [])
 
-    if "User registered successfully" in result:
+    # ユーザーと犬の登録を一括して処理する
+    result = crud.register_user_and_dogs(mymodels.User, user_values, dogs)
+
+    if result == "User and dogs registered successfully":
         return jsonify({"message": result}), 200
     else:
         return jsonify({"error": result}), 500
+
 
 #ログイン時のコード
 @app.route("/api/login", methods=['POST'])
@@ -164,68 +169,100 @@ def request_walk():
     else:
         return jsonify({"error": "Failed to create request"}), 500
 
+# 犬の情報を登録するコード
+@app.route("/api/register-dogs", methods=["POST"])
+def register_dogs():
+    data = request.get_json()
+    user_id = data.get("user_id")
+    dogs = data.get("dogs")
 
-@app.route("/customers", methods=['POST'])
-def create_customer():
-    values = request.get_json()
-    # values = {
-    #     "customer_id": "C005",
-    #     "customer_name": "佐藤Aこ",
-    #     "age": 64,
-    #     "gender": "女"
-    # }
-    tmp = crud.myinsert(mymodels.Customers, values)
-    result = crud.myselect(mymodels.Customers, values.get("customer_id"))
-    return result, 200
+    if not user_id or not dogs:
+        return jsonify({"error": "Invalid data"}), 400
 
-@app.route("/customers", methods=['GET'])
-def read_one_customer():
-    model = mymodels.Customers
-    target_id = request.args.get('customer_id') #クエリパラメータ
-    result = crud.myselect(mymodels.Customers, target_id)
-    return result, 200
+    result = crud.register_dogs(user_id, dogs)
 
-@app.route("/allcustomers", methods=['GET'])
-def read_all_customer():
-    model = mymodels.Customers
-    result = crud.myselectAll(mymodels.Customers)
-    return result, 200
+    if result:
+        return jsonify({"message": "Dogs registered successfully"}), 200
+    else:
+        return jsonify({"error": "Failed to register dogs"}), 500
 
-@app.route("/customers", methods=['PUT'])
-def update_customer():
-    print("I'm in")
-    values = request.get_json()
-    values_original = values.copy()
-    model = mymodels.Customers
-    # values = {  "customer_id": "C004",
-    #             "customer_name": "鈴木C子",
-    #             "age": 44,
-    #             "gender": "男"}
-    tmp = crud.myupdate(model, values)
-    result = crud.myselect(mymodels.Customers, values_original.get("customer_id"))
-    return result, 200
+#わんちゃん登録時の犬種選択
+@app.route("/api/breeds", methods=["GET"])
+def get_breeds():
+    breed_list = crud.get_all_breeds()  # crud.pyの関数を呼び出す
+    return jsonify(breed_list)
 
-@app.route("/customers", methods=['DELETE'])
-def delete_customer():
-    model = mymodels.Customers
-    target_id = request.args.get('customer_id') #クエリパラメータ
-    result = crud.mydelete(model, target_id)
-    return result, 200
+#散歩の登録
+@app.route("/api/register-walk", methods=["POST"])
+def register_walk():
+    user_id = session.get("user_id")  # ログイン中のユーザーのIDを取得
+    if not user_id:
+        return jsonify({"error": "Unauthorized"}), 401
 
-@app.route("/fetchtest")
-def fetchtest():
-    response = requests.get('https://jsonplaceholder.typicode.com/users')
-    return response.json(), 200
+    data = request.get_json()
 
+    try:
+        # time_start と time_end を datetime オブジェクトに変換
+        time_start = datetime.fromisoformat(data.get("time_start"))
+        time_end = datetime.fromisoformat(data.get("time_end"))
+    except ValueError:
+        return jsonify({"error": "Invalid date format"}), 400
 
-@app.route("/messages", methods=['POST'])
-def create_message():
-    values = request.get_json()
-    tmp = crud.myinsert(mymodels.Messages, values)
-    return jsonify({'status': 'Message created'}), 201
+    walk_values = {
+        "owner_user_id": user_id,
+        "description": data.get("description"),
+        "time_start": time_start,
+        "time_end": time_end,
+        "location_id": data.get("location_id"),
+        "points_required": 0  # ポイント制を実装する場合は適宜変更
+    }
 
-@app.route("/messages", methods=['GET'])
-def read_messages_by_customer_id():
-    customer_id = request.args.get('customer_id')
-    results = crud.myselectMessagesByCustomerId(mymodels.Messages, customer_id)
-    return results, 200
+    dogs = data.get("dogs", [])
+
+    result = crud.register_walk(walk_values, dogs)
+    if result == "Walk and dogs registered successfully":
+        return jsonify({"message": result}), 200
+    else:
+        return jsonify({"error": result}), 500
+
+#locationを取得
+@app.route("/api/locations", methods=["GET"])
+def get_locations():
+    locations = crud.get_all_locations()
+    if locations:
+        return jsonify(locations), 200
+    else:
+        return jsonify({"error": "No locations found"}), 404
+
+#現在ログインしているユーザーの犬リストを取得
+@app.route("/api/user-dogs", methods=["GET"])
+def get_user_dogs():
+    user_id = session.get('user_id')
+    if not user_id:
+        return jsonify({"error": "Unauthorized"}), 401
+    
+    dogs = crud.get_dogs_by_user(user_id)
+    if dogs:
+        return jsonify(dogs), 200
+    else:
+        return jsonify({"error": "No dogs found for this user"}), 404
+
+#散歩登録の権限ないユーザーに返す画面
+@app.route("/api/user-info", methods=["GET"])
+def get_user_info():
+    user_id = session.get("user_id")
+    if not user_id:
+        return jsonify({"error": "Unauthorized"}), 401
+
+    with Session(engine) as db_session:
+        user = db_session.query(mymodels.User).filter_by(user_id=user_id).first()
+        if user:
+            user_info = {
+                "name": user.name,
+                "email": user.email,
+                "dog_number": user.dog_number,
+                "points": user.points
+            }
+            return jsonify(user_info), 200
+        else:
+            return jsonify({"error": "User not found"}), 404
