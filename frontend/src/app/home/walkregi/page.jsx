@@ -61,6 +61,18 @@ export default function WalkRegi() {
     });
   };
 
+  const handleDurationChange = (e) => {
+    const minutes = parseInt(e.target.value);
+    if (!isNaN(minutes) && formData.time_start) {
+      const endTime = new Date(formData.time_start);
+      endTime.setMinutes(endTime.getMinutes() + minutes);
+      setFormData({
+        ...formData,
+        time_end: endTime,
+      });
+    }
+  };
+
   const handleDogSelect = (e) => {
     const dogId = e.target.value;
     const isChecked = e.target.checked;
@@ -111,93 +123,98 @@ export default function WalkRegi() {
   }
 
   return (
-    <div className="p-4">
-      <h1 className="text-2xl font-bold mb-4">新たな散歩を登録！</h1>
-      <form onSubmit={handleSubmit}>
-        <div className="mb-4">
-          <label className="block text-gray-700 font-semibold mb-2">
-            開始時間
-          </label>
-          <DatePicker
-            selected={formData.time_start}
-            onChange={(date) => handleDateChange("time_start", date)}
-            showTimeSelect
-            timeFormat="HH:mm"
-            timeIntervals={15}
-            dateFormat="yyyy/MM/dd HH:mm"
-            className="w-full border border-gray-300 p-3 rounded-lg focus:outline-none"
-            required
-          />
-        </div>
-        <div className="mb-4">
-          <label className="block text-gray-700 font-semibold mb-2">
-            終了時間
-          </label>
-          <DatePicker
-            selected={formData.time_end}
-            onChange={(date) => handleDateChange("time_end", date)}
-            showTimeSelect
-            timeFormat="HH:mm"
-            timeIntervals={15}
-            dateFormat="yyyy/MM/dd HH:mm"
-            className="w-full border border-gray-300 p-3 rounded-lg focus:outline-none"
-            required
-          />
-        </div>
-        <div className="mb-4">
-          <label className="block text-gray-700 font-semibold mb-2">
-            ロケーション
-          </label>
-          <select
-            name="location_id"
-            value={formData.location_id}
-            onChange={handleChange}
-            className="w-full border border-gray-300 p-3 rounded-lg focus:outline-none"
-            required
-          >
-            <option value="">ロケーションを選択</option>
-            {locations.map((location) => (
-              <option key={location.location_id} value={location.location_id}>
-                {location.location_name}
-              </option>
-            ))}
-          </select>
-        </div>
-        <div className="mb-4">
-          <label className="block text-gray-700 font-semibold mb-2">
-            犬を選択
-          </label>
-          {userDogs.map((dog) => (
-            <div key={dog.dog_id} className="mb-2">
-              <input
-                type="checkbox"
-                name="dogs"
-                value={dog.dog_id}
-                onChange={handleDogSelect}
-              />{" "}
-              {dog.dog_name}
+    <div className="flex justify-center items-center min-h-screen bg-white">
+      <div className="w-full max-w-lg p-6 bg-white rounded-lg">
+        <h1 className="text-lg font-semibold mb-6 text-gray-800 text-center">
+          散歩の予定を追加
+        </h1>
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div>
+            <label className="block text-gray-700 font-semibold mb-2">
+              開始時間
+            </label>
+            <DatePicker
+              selected={formData.time_start}
+              onChange={(date) => handleDateChange("time_start", date)}
+              showTimeSelect
+              timeFormat="HH:mm"
+              timeIntervals={15}
+              dateFormat="yyyy/MM/dd HH:mm"
+              className="w-full border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#75A05A]"
+              required
+            />
+          </div>
+          <div>
+            <label className="block text-gray-700 font-semibold mb-2">
+              お触りタイム（分）
+            </label>
+            <input
+              type="number"
+              onChange={handleDurationChange}
+              className="w-full border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#75A05A]"
+              placeholder="例: 15"
+              required
+            />
+          </div>
+          <div>
+            <label className="block text-gray-700 font-semibold mb-2">
+              待ち合わせ場所
+            </label>
+            <select
+              name="location_id"
+              value={formData.location_id}
+              onChange={handleChange}
+              className="w-full border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#75A05A]"
+              required
+            >
+              <option value="">ロケーションを選択</option>
+              {locations.map((location) => (
+                <option key={location.location_id} value={location.location_id}>
+                  {location.location_name}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label className="block text-gray-700 font-semibold mb-2">
+              連れて行くワンちゃん
+            </label>
+            <div className="space-y-3">
+              {userDogs.map((dog) => (
+                <div key={dog.dog_id} className="flex items-center">
+                  <input
+                    type="checkbox"
+                    name="dogs"
+                    value={dog.dog_id}
+                    onChange={handleDogSelect}
+                    className="mr-3 w-5 h-5"
+                  />
+                  <label className="text-gray-700">{dog.dog_name}</label>
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
-        <div className="mb-4">
-          <label className="block text-gray-700 font-semibold mb-2">
-            コメント
-          </label>
-          <textarea
-            name="description"
-            value={formData.description}
-            onChange={handleChange}
-            className="w-full border border-gray-300 p-3 rounded-lg focus:outline-none"
-            required
-          />
-        </div>
-        <button
-          type="submit"
-          className="w-full bg-blue-500 text-white p-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors"
-        >
-          登録
-        </button>
-      </form>
+          </div>
+          <div>
+            <label className="block text-gray-700 font-semibold mb-2">
+              コメント
+            </label>
+            <textarea
+              name="description"
+              value={formData.description}
+              onChange={handleChange}
+              className="w-full border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#75A05A]"
+              required
+            />
+          </div>
+          <button
+            type="submit"
+            className="w-full bg-[#75A05A] text-white py-3 rounded-lg font-semibold hover:bg-[#5f8747] transition-colors"
+          >
+            登録
+          </button>
+        </form>
+      </div>
     </div>
   );
 }
+

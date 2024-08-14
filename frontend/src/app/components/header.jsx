@@ -7,17 +7,22 @@ import '../globals.css'; // グローバルCSSをインポート
 export default function Header() {
   const [isVisible, setIsVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
+  const scrollThreshold = 10; // スクロールのしきい値を設定
 
   const handleScroll = () => {
     if (typeof window !== 'undefined') {
-      if (window.scrollY > lastScrollY) {
-        // 下にスクロール
-        setIsVisible(false);
-      } else {
-        // 上にスクロール
-        setIsVisible(true);
+      const currentScrollY = window.scrollY;
+
+      if (Math.abs(currentScrollY - lastScrollY) > scrollThreshold) {
+        if (currentScrollY > lastScrollY) {
+          // 下にスクロール
+          setIsVisible(false);
+        } else {
+          // 上にスクロール
+          setIsVisible(true);
+        }
+        setLastScrollY(currentScrollY);
       }
-      setLastScrollY(window.scrollY);
     }
   };
 
@@ -49,6 +54,7 @@ export default function Header() {
     </header>
   );
 }
+
 
 
 
