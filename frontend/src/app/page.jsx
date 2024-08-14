@@ -34,7 +34,7 @@ export default function Top() {
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-gradient-to-b from-white to-gray-100">
+    <div className="flex flex-col min-h-screen bg-white">
       {/* ヘッダー部分 */}
       <header
         className={`bg-white py-0 px-2 border-b-2 border-[#c5e1a5] text-center fixed top-0 w-full z-[1000] flex justify-between items-center duration-100`}
@@ -47,7 +47,7 @@ export default function Top() {
             width="220"
             style={{
               fontFamily: "Kosugi Maru, sans-serif",
-              fill: "#75A05A",
+              fill: "#75A05A", // テキストの色を濃く調整
               fontSize: "14px",
               fontWeight: "bold",
               letterSpacing: "-0.5px",
@@ -62,17 +62,11 @@ export default function Top() {
       </header>
 
       {/* コンテンツ部分 */}
-      <main className="flex flex-col items-center justify-center flex-1 px-4 pt-16">
-        <h1 className="text-2xl font-bold mb-6 text-gray-800">
+      <main className="flex flex-col items-center justify-center flex-1 px-4 pt-20">
+        <h1 className="text-xl font-bold mb-4 text-gray-800 text-center">
           わんちゃんと、特別な体験を。
         </h1>
-        <div className="w-full max-w-md p-8 bg-white shadow-xl rounded-lg">
-          <h1 className="text-2xl font-bold text-gray-800 mb-8 text-center">
-            ようこそ！
-          </h1>
-          <p className="text-lg text-gray-600 mb-6 text-center">
-            特別な体験を始めましょう。
-          </p>
+        <div className="w-full max-w-md p-8 bg-white rounded-lg">
           <form onSubmit={handleSubmit}>
             <div className="mb-6">
               <label className="block text-gray-700 font-medium mb-2">
@@ -82,7 +76,7 @@ export default function Top() {
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full border border-gray-300 p-3 rounded focus:outline-none focus:ring-2 focus:ring-[#A8D38D] focus:border-transparent"
+                className="w-full border border-gray-300 p-3 rounded focus:outline-none focus:ring-2 focus:ring-[#75A05A] focus:border-transparent"
                 placeholder="例: user@example.com"
                 required
               />
@@ -95,20 +89,20 @@ export default function Top() {
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full border border-gray-300 p-3 rounded focus:outline-none focus:ring-2 focus:ring-[#A8D38D] focus:border-transparent"
+                className="w-full border border-gray-300 p-3 rounded focus:outline-none focus:ring-2 focus:ring-[#75A05A] focus:border-transparent"
                 placeholder="例: ********"
                 required
               />
             </div>
             <button
               type="submit"
-              className="w-full bg-[#A8D38D] text-white py-3 rounded-lg font-semibold hover:bg-[#96c781] transition-colors shadow-md"
+              className="w-full bg-[#75A05A] text-white py-3 rounded-lg font-semibold hover:bg-[#5f8747] transition-colors"
             >
               ログイン
             </button>
           </form>
           <div className="mt-6 text-center">
-            <Link href="/new" className="text-[#A8D38D] hover:underline">
+            <Link href="/new" className="text-[#75A05A] hover:underline">
               新規登録はこちら
             </Link>
           </div>
@@ -116,7 +110,7 @@ export default function Top() {
       </main>
 
       {/* フッター部分 */}
-      <footer className="w-full py-6 bg-gray-200 text-center text-gray-500 text-sm shadow-inner">
+      <footer className="w-full py-6 bg-gray-200 text-center text-gray-500 text-sm">
         &copy; 2024 わん-Chance-アイドル. All rights reserved.
       </footer>
     </div>
