@@ -95,7 +95,8 @@ def get_all_walks():
                     "name": dog.dog_name,
                     "breed": breed.breed_name,
                     "age": dog.dog_age,
-                    "gender": dog.dog_sex
+                    "gender": dog.dog_sex,
+                    "image": dog.image  # ここで画像URLを追加
                 })
             
             location = walk.location
@@ -106,7 +107,8 @@ def get_all_walks():
                 "time_start": walk.time_start.strftime("%H:%M"),
                 "time_end": walk.time_end.strftime("%H:%M"),
                 "location": location.location_name,
-                "dogs": dogs
+                "dogs": dogs,
+                "points_required": walk.points_required  # 必要ポイントを追加
             })
         
         return walk_data
@@ -191,7 +193,8 @@ def get_all_walks_by_requests():
                         "name": dog.dog_name,
                         "breed": breed.breed_name,
                         "age": dog.dog_age,
-                        "gender": dog.dog_sex
+                        "gender": dog.dog_sex,
+                        "image": dog.image  # ここで画像URLを追加
                     })
                 
                 location = walk.location
@@ -202,7 +205,8 @@ def get_all_walks_by_requests():
                     "time_start": walk.time_start.strftime("%H:%M"),
                     "time_end": walk.time_end.strftime("%H:%M"),
                     "location": location.location_name,
-                    "dogs": dogs
+                    "dogs": dogs,
+                    "points_required": walk.points_required  # 必要ポイントを追加
                 })
         
         return walk_data

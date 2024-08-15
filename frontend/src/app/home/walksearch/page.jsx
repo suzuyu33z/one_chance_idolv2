@@ -45,7 +45,6 @@ export default function WalkListPage() {
 
   return (
     <div className="flex flex-col min-h-screen bg-white">
-
       {/* メインコンテンツ */}
       <main className="flex-1 overflow-y-auto w-full mt-8">
         <div className="flex flex-col items-center px-4 pt-4 pb-8">
@@ -68,6 +67,7 @@ export default function WalkListPage() {
                 location={walk.location}
                 dogs={walk.dogs}
                 walkId={walk.walk_id}
+                pointsRequired={walk.points_required} // ここに必要ポイントを追加
               />
             ))
           ) : (

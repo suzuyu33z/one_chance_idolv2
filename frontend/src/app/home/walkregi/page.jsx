@@ -206,6 +206,20 @@ export default function WalkRegi() {
               required
             />
           </div>
+          <div className="mb-4">
+            <label className="block text-gray-700 font-semibold mb-2">
+              必要ポイント
+            </label>
+            <input
+              type="number"
+              name="points_required"
+              value={formData.points_required}
+              onChange={handleChange}
+              className="w-full border border-gray-300 p-3 rounded-lg focus:outline-none"
+              placeholder="ポイントを入力してください"
+              required
+            />
+          </div>
           <button
             type="submit"
             className="w-full bg-[#75A05A] text-white py-3 rounded-lg font-semibold hover:bg-[#5f8747] transition-colors"
@@ -217,4 +231,3 @@ export default function WalkRegi() {
     </div>
   );
 }
-

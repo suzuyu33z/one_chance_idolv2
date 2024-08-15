@@ -63,6 +63,7 @@ export default function UserWalkListPage() {
                 location={walk.location}
                 dogs={walk.dogs}
                 walkId={walk.walk_id}
+                pointsRequired={walk.points_required} // ここに必要ポイントを追加
               />
             ))
           ) : (

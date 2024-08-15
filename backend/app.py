@@ -192,7 +192,7 @@ def get_breeds():
     breed_list = crud.get_all_breeds()  # crud.pyの関数を呼び出す
     return jsonify(breed_list)
 
-#散歩の登録
+# 散歩の登録
 @app.route("/api/register-walk", methods=["POST"])
 def register_walk():
     user_id = session.get("user_id")  # ログイン中のユーザーのIDを取得
@@ -214,7 +214,7 @@ def register_walk():
         "time_start": time_start,
         "time_end": time_end,
         "location_id": data.get("location_id"),
-        "points_required": 0  # ポイント制を実装する場合は適宜変更
+        "points_required": data.get("points_required", 0)  # リクエストからポイントを取得
     }
 
     dogs = data.get("dogs", [])
