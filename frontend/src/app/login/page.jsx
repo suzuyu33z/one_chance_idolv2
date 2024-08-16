@@ -34,12 +34,6 @@ export default function Login() {
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-50">
       <div className="w-full max-w-md p-8 bg-white shadow-xl rounded-lg">
-        <h1 className="text-2xl font-bold text-gray-800 mb-8 text-center">
-          ようこそ！
-        </h1>
-        <p className="text-lg text-gray-600 mb-6 text-center">
-          特別な体験を始めましょう。
-        </p>
         <form onSubmit={handleSubmit}>
           <div className="mb-6">
             <label className="block text-gray-700 font-medium mb-2">メールアドレス</label>

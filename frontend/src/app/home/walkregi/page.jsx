@@ -1,8 +1,11 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import DatePicker from "react-datepicker";
+import DatePicker, { registerLocale } from "react-datepicker";
+import ja from "date-fns/locale/ja";
 import "react-datepicker/dist/react-datepicker.css";
+
+registerLocale("ja", ja);
 
 export default function WalkRegi() {
   const [formData, setFormData] = useState({
@@ -11,14 +14,14 @@ export default function WalkRegi() {
     time_end: null,
     location_id: "",
     dogs: [],
+    points_required: "",
   });
   const [locations, setLocations] = useState([]);
-  const [userDogs, setUserDogs] = useState(null); // 初期値をnullに設定
-  const [userInfo, setUserInfo] = useState(null); // ユーザー情報を格納
+  const [userDogs, setUserDogs] = useState(null); 
+  const [userInfo, setUserInfo] = useState(null); 
   const router = useRouter();
 
   useEffect(() => {
-    // ユーザー情報を取得
     fetch(`${process.env.API_ENDPOINT}/api/user-info`, {
       method: "GET",
       credentials: "include",
@@ -27,15 +30,13 @@ export default function WalkRegi() {
       .then((data) => {
         setUserInfo(data);
         if (data.dog_number === 0) {
-          return; // 犬が0匹の場合、他のデータを取得しない
+          return;
         }
-        // ロケーションリストを取得
         fetch(`${process.env.API_ENDPOINT}/api/locations`)
           .then((response) => response.json())
           .then((data) => setLocations(data))
           .catch((error) => console.error("Error fetching locations:", error));
 
-        // ユーザーの犬リストを取得
         fetch(`${process.env.API_ENDPOINT}/api/user-dogs`, {
           method: "GET",
           credentials: "include",
@@ -89,72 +90,97 @@ export default function WalkRegi() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    fetch(`${process.env.API_ENDPOINT}/api/register-walk`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      credentials: "include", // セッションを含める
-      body: JSON.stringify(formData),
-    })
-      .then((response) => {
-        if (response.ok) {
-          router.push("/home");
-        } else {
-          throw new Error("Failed to register walk.");
-        }
+    
+    // 確認ポップアップを表示
+    const confirmed = window.confirm("登録しますが良いですか？");
+
+    if (confirmed) {
+      fetch(`${process.env.API_ENDPOINT}/api/register-walk`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify(formData),
       })
-      .catch((error) => console.error("Error registering walk:", error));
+        .then((response) => {
+          if (response.ok) {
+            router.push("/home");
+          } else {
+            throw new Error("Failed to register walk.");
+          }
+        })
+        .catch((error) => console.error("Error registering walk:", error));
+    }
   };
 
   if (userInfo === null) {
-    // userInfoが取得されるまで待つ
     return <div>Loading...</div>;
   }
 
   if (userInfo.dog_number === 0) {
-    // 犬の数が0の場合
     return <div>権限がありません</div>;
   }
 
   if (userDogs === null) {
-    // userDogsが取得されるまで待つ
     return <div>Loading...</div>;
   }
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-white">
-      <div className="w-full max-w-lg p-6 bg-white rounded-lg">
+    <div className="flex justify-center items-center min-h-screen bg-gray-50">
+      <div className="w-full max-w-lg p-6 rounded-lg mt-8 mb-16">
         <h1 className="text-lg font-semibold mb-6 text-gray-800 text-center">
-          散歩の予定を追加
+          新しい散歩の予定
         </h1>
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
             <label className="block text-gray-700 font-semibold mb-2">
-              開始時間
+              連れて行くワンちゃん
             </label>
-            <DatePicker
-              selected={formData.time_start}
-              onChange={(date) => handleDateChange("time_start", date)}
-              showTimeSelect
-              timeFormat="HH:mm"
-              timeIntervals={15}
-              dateFormat="yyyy/MM/dd HH:mm"
-              className="w-full border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#75A05A]"
-              required
-            />
+            <div className="space-y-3">
+              {userDogs.map((dog) => (
+                <div key={dog.dog_id} className="flex items-center">
+                  <input
+                    type="checkbox"
+                    name="dogs"
+                    value={dog.dog_id}
+                    onChange={handleDogSelect}
+                    className="mr-3 w-5 h-5"
+                  />
+                  <label className="text-gray-700">{dog.dog_name}</label>
+                </div>
+              ))}
+            </div>
           </div>
-          <div>
-            <label className="block text-gray-700 font-semibold mb-2">
-              お触りタイム（分）
-            </label>
-            <input
-              type="number"
-              onChange={handleDurationChange}
-              className="w-full border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#75A05A]"
-              placeholder="例: 15"
-              required
-            />
+          <div className="flex justify-between">
+            <div className="w-1/2 pr-2">
+              <label className="block text-gray-700 font-semibold mb-2">
+                待ち合わせ時間
+              </label>
+              <DatePicker
+                selected={formData.time_start}
+                onChange={(date) => handleDateChange("time_start", date)}
+                showTimeSelect
+                timeFormat="HH:mm"
+                timeIntervals={15}
+                dateFormat="yyyy/MM/dd HH:mm"
+                locale="ja"
+                className="w-full border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#75A05A]"
+                required
+              />
+            </div>
+            <div className="w-1/2 pl-2">
+              <label className="block text-gray-700 font-semibold mb-2">
+                お触りタイム（分）
+              </label>
+              <input
+                type="number"
+                onChange={handleDurationChange}
+                className="w-full border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#75A05A]"
+                placeholder="例: 15"
+                required
+              />
+            </div>
           </div>
           <div>
             <label className="block text-gray-700 font-semibold mb-2">
@@ -177,22 +203,17 @@ export default function WalkRegi() {
           </div>
           <div>
             <label className="block text-gray-700 font-semibold mb-2">
-              連れて行くワンちゃん
+              必要ポイント
             </label>
-            <div className="space-y-3">
-              {userDogs.map((dog) => (
-                <div key={dog.dog_id} className="flex items-center">
-                  <input
-                    type="checkbox"
-                    name="dogs"
-                    value={dog.dog_id}
-                    onChange={handleDogSelect}
-                    className="mr-3 w-5 h-5"
-                  />
-                  <label className="text-gray-700">{dog.dog_name}</label>
-                </div>
-              ))}
-            </div>
+            <input
+              type="number"
+              name="points_required"
+              value={formData.points_required}
+              onChange={handleChange}
+              className="w-full border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#75A05A]"
+              placeholder="ポイントを入力してください"
+              required
+            />
           </div>
           <div>
             <label className="block text-gray-700 font-semibold mb-2">
@@ -203,20 +224,6 @@ export default function WalkRegi() {
               value={formData.description}
               onChange={handleChange}
               className="w-full border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#75A05A]"
-              required
-            />
-          </div>
-          <div className="mb-4">
-            <label className="block text-gray-700 font-semibold mb-2">
-              必要ポイント
-            </label>
-            <input
-              type="number"
-              name="points_required"
-              value={formData.points_required}
-              onChange={handleChange}
-              className="w-full border border-gray-300 p-3 rounded-lg focus:outline-none"
-              placeholder="ポイントを入力してください"
               required
             />
           </div>

@@ -26,7 +26,15 @@ export default function UserWalkListPage() {
         })
         .then((data) => {
           console.log("Fetched walks data:", data); // 取得したデータを表示
-          setWalks(data);
+
+          // 日付と開始時間でソート
+          const sortedWalks = data.sort((a, b) => {
+            const dateA = new Date(`${a.date}T${a.time_start}`);
+            const dateB = new Date(`${b.date}T${b.time_start}`);
+            return dateB - dateA; // 新しい順にソート
+          });
+
+          setWalks(sortedWalks);
         })
         .catch((error) => console.error("Error fetching user walks:", error));
     }
@@ -44,7 +52,7 @@ export default function UserWalkListPage() {
   }, [isPageLoaded]); // ページロード後にフッターを再表示
 
   return (
-    <div className="flex flex-col min-h-screen bg-white">
+    <div className="flex flex-col min-h-screen bg-gray-50">
       {/* ヘッダー */}
 
       {/* メインコンテンツ */}
@@ -74,3 +82,4 @@ export default function UserWalkListPage() {
     </div>
   );
 }
+

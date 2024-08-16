@@ -7,7 +7,7 @@ import '../globals.css'; // グローバルCSSをインポート
 export default function Header() {
   const [isVisible, setIsVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
-  const scrollThreshold = 10; // スクロールのしきい値を設定
+  const scrollThreshold = 40; // スクロールのしきい値を設定
 
   const handleScroll = () => {
     if (typeof window !== 'undefined') {

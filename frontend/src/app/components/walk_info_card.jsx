@@ -9,14 +9,35 @@ export default function WalkInfoCard({
   walkId,
   pointsRequired,
 }) {
+  const influencerStatus =
+    pointsRequired >= 5000
+      ? {
+          color: "text-yellow-500",
+          icon: "military_tech",
+        }
+      : pointsRequired >= 3000
+      ? {
+          color: "text-gray-400",
+          icon: "military_tech",
+        }
+      : null;
+
   return (
     <div className="bg-white p-4 rounded-lg shadow-lg m-4 w-full border border-gray-200 relative z-50">
-      {/* 犬の画像を表示 */}
-      <div className="mb-2 text-sm text-gray-700 flex">
+      {influencerStatus && (
+        <div
+          className={`absolute top-2 right-2 px-1.5 py-0.5 text-xs font-bold flex items-center ${influencerStatus.color} ${influencerStatus.shape} ${influencerStatus.border}`}
+        >
+          <span className="material-icons mr-1 text-sm">{influencerStatus.icon}</span>
+          {influencerStatus.label}
+        </div>
+      )}
+      {/* 犬の画像を表示（縦並び） */}
+      <div className="mb-2 text-sm text-gray-700">
         {dogs.map((dog, index) => (
           <div
             key={index}
-            className={`mb-1 ${index > 0 ? "mt-2" : ""} flex items-center`}
+            className="flex items-center mb-2"
           >
             <img
               src={dog.image}
@@ -50,9 +71,10 @@ export default function WalkInfoCard({
           <span>{location}</span>
         </div>
       </div>
-      {/* 必要ポイントを表示 */}
-      <div className="mt-2 text-sm text-gray-700">
-        <span>必要ポイント: {pointsRequired}</span>
+      {/* 必要ポイントの表記を削除してシンプルに */}
+      <div className="mt-2 text-sm text-gray-700 flex items-center">
+        <span className="material-icons text-[#75A05A] mr-2">paid</span>
+        <span>{pointsRequired}</span>
       </div>
       <Link href={`/home/walksearch/detail/${walkId}`}>
         <div className="inline-block mt-4 px-4 py-2 bg-[#75A05A] text-white rounded-full font-semibold transition-transform transform hover:scale-105 cursor-pointer text-xs">
@@ -62,3 +84,6 @@ export default function WalkInfoCard({
     </div>
   );
 }
+
+
+

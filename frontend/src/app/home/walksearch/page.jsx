@@ -44,7 +44,7 @@ export default function WalkListPage() {
   });
 
   return (
-    <div className="flex flex-col min-h-screen bg-white">
+    <div className="flex flex-col min-h-screen bg-gray-50">
       {/* メインコンテンツ */}
       <main className="flex-1 overflow-y-auto w-full mt-8">
         <div className="flex flex-col items-center px-4 pt-4 pb-8">

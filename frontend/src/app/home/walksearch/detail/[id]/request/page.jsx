@@ -1,18 +1,17 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import useAuth from "../../../../../utils/useAuth"; // useAuthをインポート
+import useAuth from "../../../../../utils/useAuth";
 
 export default function WalkSearchDetailRequest() {
-  const { id } = useParams(); // walk_id を取得
+  const { id } = useParams();
   const router = useRouter();
-  const isAuthenticated = useAuth(); // 認証状態を確認
+  const isAuthenticated = useAuth();
   const [walkDetail, setWalkDetail] = useState(null);
   const [userId, setUserId] = useState(null);
 
   useEffect(() => {
     if (isAuthenticated && id) {
-      // ユーザー情報を取得
       fetch(`${process.env.API_ENDPOINT}/api/check-auth`, {
         method: "GET",
         headers: {
@@ -23,12 +22,11 @@ export default function WalkSearchDetailRequest() {
         .then((response) => response.json())
         .then((data) => {
           if (data.user_id) {
-            setUserId(data.user_id); // ユーザーIDを保存
+            setUserId(data.user_id);
           }
         })
         .catch((error) => console.error("Error fetching user info:", error));
 
-      // Flask APIから特定のwalk_idのデータを取得
       fetch(`${process.env.API_ENDPOINT}/api/walks/${id}`)
         .then((response) => response.json())
         .then((data) => setWalkDetail(data))
@@ -54,8 +52,8 @@ export default function WalkSearchDetailRequest() {
     })
       .then((response) => {
         if (response.ok) {
-          alert("申請が成功しました！");
-          router.push("/home/walksearch"); // 申請後、元のページにリダイレクト
+          alert("リクエストが送信されました");
+          router.push("/home/walksearch");
         } else {
           alert("申請に失敗しました。再度お試しください。");
         }
@@ -71,36 +69,32 @@ export default function WalkSearchDetailRequest() {
   }
 
   return (
-    <div className="flex flex-col min-h-screen bg-white">
-      <header className="w-full bg-green-100 py-4 text-center text-green-700 font-bold text-lg">
-        わん-Chance-アイドル
-      </header>
-
-      <main className="flex-1 overflow-y-auto w-full px-4 py-4">
-        <h2 className="text-xl font-bold text-center mb-6">申請しますか？</h2>
-        <div className="bg-gray-100 p-4 rounded-md shadow-md mb-4">
+    <div className="flex flex-col min-h-screen bg-gray-50 mt-16 px-4">
+      <main className="flex-1 overflow-y-auto w-full">
+        <h2 className="text-xl font-bold text-center mb-6">この内容で申請しますか？</h2>
+        <div className="bg-gray-100 p-4 rounded-lg shadow-lg">
           <h3 className="text-lg font-semibold mb-2">日時</h3>
-          <p>
+          <p className="text-sm text-gray-700">
             {walkDetail.date} {walkDetail.time_start}〜{walkDetail.time_end}
           </p>
 
           <h3 className="text-lg font-semibold mb-2 mt-4">場所</h3>
-          <p>{walkDetail.location}</p>
+          <p className="text-sm text-gray-700">{walkDetail.location}</p>
 
           <h3 className="text-lg font-semibold mb-2 mt-4">わんちゃん</h3>
           {walkDetail.dogs.map((dog, index) => (
-            <p key={index}>
+            <p key={index} className="text-sm text-gray-700">
               {dog.name} / {dog.breed} / {dog.age}歳 / {dog.gender}
             </p>
           ))}
         </div>
 
-        <div className="flex justify-center mt-4">
+        <div className="flex justify-center mt-8">
           <button
-            className="bg-blue-500 text-white py-2 px-6 rounded"
+            className="bg-[#75A05A] text-white py-2 px-6 rounded-full font-semibold transition-transform transform hover:scale-105"
             onClick={handleRequest}
           >
-            申請する
+            リクエスト送信
           </button>
         </div>
       </main>
