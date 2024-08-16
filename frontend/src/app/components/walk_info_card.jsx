@@ -15,6 +15,7 @@ export default function WalkInfoCard({
           color: "text-yellow-500",
           icon: "military_tech",
         }
+
       : pointsRequired >= 3000
       ? {
           color: "text-gray-400",
@@ -71,9 +72,13 @@ export default function WalkInfoCard({
           <span>{location}</span>
         </div>
       </div>
-      {/* 必要ポイントの表記を削除してシンプルに */}
+      {/* 必要ポイントのアイコンをカスタムアイコンに変更 */}
       <div className="mt-2 text-sm text-gray-700 flex items-center">
-        <span className="material-icons text-[#75A05A] mr-2">paid</span>
+        <div
+          className="w-6 h-6 bg-[#75A05A] text-white font-bold rounded-full flex items-center justify-center mr-2"
+        >
+          P
+        </div>
         <span>{pointsRequired}</span>
       </div>
       <Link href={`/home/walksearch/detail/${walkId}`}>
