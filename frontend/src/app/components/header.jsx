@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import "../globals.css"; // グローバルCSSをインポート
 
@@ -10,6 +10,8 @@ export default function Header() {
   const scrollThreshold = 40; // スクロールのしきい値を設定
 
   const [userInfo, setUserInfo] = useState(null);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const menuRef = useRef(null);
 
   useEffect(() => {
     // ユーザー情報を取得
@@ -56,6 +58,28 @@ export default function Header() {
     }
   }, [lastScrollY]);
 
+  const toggleMenu = () => {
+    setMenuOpen(!menuOpen);
+  };
+
+  const handleClickOutside = (event) => {
+    if (menuRef.current && !menuRef.current.contains(event.target)) {
+      setMenuOpen(false);
+    }
+  };
+
+  useEffect(() => {
+    if (menuOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    } else {
+      document.removeEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [menuOpen]);
+
   return (
     <header
       className={`bg-white py-0 px-2 border-b-2 border-[#c5e1a5] text-center fixed top-0 w-full z-[1000] flex justify-between items-center duration-100 ${
@@ -85,17 +109,45 @@ export default function Header() {
         </svg>
         {userInfo && (
           <div className="ml-4 text-xs">
-            <p>{`名前: ${userInfo.name}`}</p>
+            <p>{`ユーザー名: ${userInfo.name}`}</p>
             <p>{`ポイント: ${userInfo.points}`}</p>
           </div>
         )}
       </div>
-      <Link
-        href="/logout"
-        className="text-[#75A05A] font-semibold py-1 px-2 rounded border border-[#75A05A] hover:bg-[#A8D38D] hover:text-white text-xs"
-      >
-        ログアウト
-      </Link>
+      <div className="relative" ref={menuRef}>
+        <span
+          className="material-icons text-[#75A05A] text-2xl cursor-pointer"
+          onClick={toggleMenu}
+        >
+          menu
+        </span>
+        {menuOpen && (
+          <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-300 rounded-lg shadow-lg z-50">
+            <ul className="py-1">
+              <li>
+                <Link href="/use-points" className="block px-4 py-2 text-gray-800 hover:bg-gray-100">
+                  ポイントを使う
+                </Link>
+              </li>
+              <li>
+                <Link href="/buy-points" className="block px-4 py-2 text-gray-800 hover:bg-gray-100">
+                  ポイント購入
+                </Link>
+              </li>
+              <li>
+                <Link href="/favorites" className="block px-4 py-2 text-gray-800 hover:bg-gray-100">
+                  お気に入り
+                </Link>
+              </li>
+              <li>
+                <Link href="/logout" className="block px-4 py-2 text-gray-800 hover:bg-gray-100">
+                  ログアウト
+                </Link>
+              </li>
+            </ul>
+          </div>
+        )}
+      </div>
     </header>
   );
 }

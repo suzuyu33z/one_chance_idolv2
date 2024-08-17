@@ -67,12 +67,6 @@ export default function Top() {
           わんちゃんと、特別な体験を。
         </h1>
         <div className="w-full max-w-md p-8 bg-white shadow-xl rounded-lg">
-          <h1 className="text-2xl font-bold text-gray-800 mb-8 text-center">
-            ようこそ！
-          </h1>
-          <p className="text-lg text-gray-600 mb-6 text-center">
-            特別な体験を始めましょう。
-          </p>
           <form onSubmit={handleSubmit}>
             <div className="mb-6">
               <label className="block text-gray-700 font-medium mb-2">
@@ -102,13 +96,13 @@ export default function Top() {
             </div>
             <button
               type="submit"
-              className="w-full bg-[#A8D38D] text-white py-3 rounded-lg font-semibold hover:bg-[#96c781] transition-colors shadow-md"
+              className="w-full bg-[#75A05A] text-white py-3 rounded-lg font-semibold hover:bg-[#679150] transition-colors shadow-md"
             >
               ログイン
             </button>
           </form>
           <div className="mt-6 text-center">
-            <Link href="/new" className="text-[#A8D38D] hover:underline">
+            <Link href="/new" className="text-[#75A05A] hover:underline">
               新規登録はこちら
             </Link>
           </div>
