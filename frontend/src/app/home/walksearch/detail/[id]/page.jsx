@@ -79,22 +79,32 @@ export default function WalkDetailPage() {
   }
 
   return (
-    <div className="flex flex-col min-h-screen bg-gray-50 mt-4"> 
+    <div className="flex flex-col min-h-screen bg-gray-50 mt-4">
       <main className="flex-1 w-full px-6 py-8 mb-24">
         <div className="space-y-6">
           <div className="bg-white p-4 rounded-lg shadow-md">
             <DogInfo dogs={walkDetail.dogs} />
-            <div className="mt-6"> 
+            <div className="mt-6">
               <WalkDetail
                 date={walkDetail.date}
                 time_start={walkDetail.time_start}
                 time_end={walkDetail.time_end}
                 location={walkDetail.location}
                 description={walkDetail.description}
-            />
+              />
+              {/* ポイント数を表示 */}
+              <div className="mt-4 text-sm text-gray-700 flex items-center">
+                <div className="w-6 h-6 bg-[#75A05A] text-white font-bold rounded-full flex items-center justify-center mr-2">
+                  P
+                </div>
+                <span>必要ポイント: {walkDetail.points_required}</span>
+              </div>
             </div>
           </div>
-          <OwnerInfo ownerName={walkDetail.owner_name} ownerBio={walkDetail.owner_bio} />
+          <OwnerInfo
+            ownerName={walkDetail.owner_name}
+            ownerBio={walkDetail.owner_bio}
+          />
         </div>
         <CommentsSection
           messages={messages}
@@ -103,7 +113,7 @@ export default function WalkDetailPage() {
           handleSendMessage={handleSendMessage}
           setNewMessage={setNewMessage}
         />
-        <div className="flex justify-center mt-8"> 
+        <div className="flex justify-center mt-8">
           <button
             className="bg-[#5A8D75] text-white py-2 px-6 rounded-lg font-semibold hover:bg-[#487760] transition-colors shadow-md"
             onClick={handleRequest}

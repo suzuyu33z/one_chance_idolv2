@@ -21,11 +21,18 @@ export default function RootLayout({ children }) {
       if (typeof window !== "undefined") {
         const path = window.location.pathname;
         setShouldHideFooter(hideFooterPaths.includes(path));
+        console.log("Current path:", path);
       }
     };
 
+    // 初期ロード時に一度非表示にする（リセット）
+    setShouldHideFooter(false);
+
     // 初期ロード時に現在のパスをチェック
     handleRouteChange();
+
+    // 100ms後に再度フッターとヘッダーの表示を確認
+    setTimeout(handleRouteChange, 100);
 
     // ブラウザの戻る・進むボタンに対応
     window.addEventListener("popstate", handleRouteChange);
@@ -51,5 +58,3 @@ export default function RootLayout({ children }) {
     </html>
   );
 }
-
-

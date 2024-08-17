@@ -2,15 +2,35 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import '../globals.css'; // グローバルCSSをインポート
+import "../globals.css"; // グローバルCSSをインポート
 
 export default function Header() {
   const [isVisible, setIsVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
   const scrollThreshold = 40; // スクロールのしきい値を設定
 
+  const [userInfo, setUserInfo] = useState(null);
+
+  useEffect(() => {
+    // ユーザー情報を取得
+    fetch(`${process.env.API_ENDPOINT}/api/user-info`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include", // クッキーを含める
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (!data.error) {
+          setUserInfo(data);
+        }
+      })
+      .catch((error) => console.error("Error fetching user info:", error));
+  }, []);
+
   const handleScroll = () => {
-    if (typeof window !== 'undefined') {
+    if (typeof window !== "undefined") {
       const currentScrollY = window.scrollY;
 
       if (Math.abs(currentScrollY - lastScrollY) > scrollThreshold) {
@@ -27,35 +47,55 @@ export default function Header() {
   };
 
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      window.addEventListener('scroll', handleScroll);
+    if (typeof window !== "undefined") {
+      window.addEventListener("scroll", handleScroll);
 
       return () => {
-        window.removeEventListener('scroll', handleScroll);
+        window.removeEventListener("scroll", handleScroll);
       };
     }
   }, [lastScrollY]);
 
   return (
-    <header className={`bg-white py-0 px-2 border-b-2 border-[#c5e1a5] text-center fixed top-0 w-full z-[1000] flex justify-between items-center duration-100 ${isVisible ? 'translate-y-0' : '-translate-y-full'}`}>
-      <svg width="220" height="40" viewBox="0 10 220 40">
-        <defs>
-          <path id="curve" d="M 10,40 Q 100,20 190,40" />
-        </defs>
-        <text width="220" style={{ fontFamily: 'Kosugi Maru, sans-serif', fill: '#75A05A', fontSize: '14px', fontWeight: 'bold', letterSpacing: '-0.5px', textDecoration: 'underline' }}>  
-          <textPath xlinkHref="#curve" dy={-5}>
-            わん^Chance^アイドル
-          </textPath>
-        </text>
-      </svg>
-      <Link href="/logout" className="text-[#75A05A] font-semibold py-1 px-2 rounded border border-[#75A05A] hover:bg-[#A8D38D] hover:text-white text-xs">
+    <header
+      className={`bg-white py-0 px-2 border-b-2 border-[#c5e1a5] text-center fixed top-0 w-full z-[1000] flex justify-between items-center duration-100 ${
+        isVisible ? "translate-y-0" : "-translate-y-full"
+      }`}
+    >
+      <div className="flex items-center">
+        <svg width="220" height="40" viewBox="0 10 220 40">
+          <defs>
+            <path id="curve" d="M 10,40 Q 100,20 190,40" />
+          </defs>
+          <text
+            width="220"
+            style={{
+              fontFamily: "Kosugi Maru, sans-serif",
+              fill: "#75A05A",
+              fontSize: "14px",
+              fontWeight: "bold",
+              letterSpacing: "-0.5px",
+              textDecoration: "underline",
+            }}
+          >
+            <textPath xlinkHref="#curve" dy={-5}>
+              わん^Chance^アイドル
+            </textPath>
+          </text>
+        </svg>
+        {userInfo && (
+          <div className="ml-4 text-xs">
+            <p>{`名前: ${userInfo.name}`}</p>
+            <p>{`ポイント: ${userInfo.points}`}</p>
+          </div>
+        )}
+      </div>
+      <Link
+        href="/logout"
+        className="text-[#75A05A] font-semibold py-1 px-2 rounded border border-[#75A05A] hover:bg-[#A8D38D] hover:text-white text-xs"
+      >
         ログアウト
       </Link>
     </header>
   );
 }
-
-
-
-
-

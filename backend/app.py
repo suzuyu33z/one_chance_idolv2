@@ -148,6 +148,13 @@ def request_walk():
     walk_id = data.get("walk_id")
     requested_time_str = data.get("requested_time")  # クライアントからの文字列を取得
 
+    # リクエストされた散歩の情報を取得
+    walk = crud.get_walk_by_id(walk_id)
+    if not walk:
+        return jsonify({"error": "Walk not found"}), 404
+    
+    required_points = walk["points_required"]
+
     try:
         # requested_time_str のフォーマットを調整して datetime オブジェクトに変換
         if len(requested_time_str) == 5:  # フォーマットが 'HH:MM' の場合
@@ -158,16 +165,33 @@ def request_walk():
     except ValueError:
         return jsonify({"error": "Invalid date format"}), 400
 
-    result = crud.create_walk_request(
-        walk_id=walk_id,
-        requesting_user_id=requesting_user_id,
-        requested_time=requested_time
-    )
+    # ユーザーのポイントを取得
+    with Session(engine) as db_session:
+        user = db_session.query(mymodels.User).filter_by(user_id=requesting_user_id).first()
+        if not user:
+            return jsonify({"error": "User not found"}), 404
 
-    if result:
-        return jsonify({"message": "Request created successfully"}), 201
-    else:
-        return jsonify({"error": "Failed to create request"}), 500
+        # ポイントが足りるかチェック
+        if user.points < required_points:
+            return jsonify({"error": "Not enough points"}), 400
+
+        # ポイントを引く
+        user.points -= required_points
+
+        # リクエストを作成
+        result = crud.create_walk_request(
+            walk_id=walk_id,
+            requesting_user_id=requesting_user_id,
+            requested_time=requested_time
+        )
+
+        if result:
+            db_session.commit()  # トランザクションをコミット
+            return jsonify({"message": "Request created successfully"}), 201
+        else:
+            db_session.rollback()  # エラー時にロールバック
+            return jsonify({"error": "Failed to create request"}), 500
+
 
 # 犬の情報を登録するコード
 @app.route("/api/register-dogs", methods=["POST"])

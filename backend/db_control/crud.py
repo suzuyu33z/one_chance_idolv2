@@ -153,7 +153,8 @@ def get_walk_by_id(walk_id):
                 "description": walk.description,
                 "owner_name": walk.owner.name,
                 "owner_bio": walk.owner.bio,
-                "dogs": dogs
+                "dogs": dogs,
+                "points_required": walk.points_required  # 必要ポイントを追加
             }
             
             return walk_data

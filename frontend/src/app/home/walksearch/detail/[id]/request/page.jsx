@@ -55,7 +55,13 @@ export default function WalkSearchDetailRequest() {
           alert("リクエストが送信されました");
           router.push("/home/walksearch");
         } else {
-          alert("申請に失敗しました。再度お試しください。");
+          return response.json().then((data) => {
+            if (data.error === "Not enough points") {
+              alert("ポイントが不足しています。");
+            } else {
+              alert("申請に失敗しました。再度お試しください。");
+            }
+          });
         }
       })
       .catch((error) => {
@@ -64,6 +70,7 @@ export default function WalkSearchDetailRequest() {
       });
   };
 
+  // walkDetailがnullの場合の処理を追加
   if (!walkDetail) {
     return <p>Loading...</p>;
   }
@@ -71,7 +78,9 @@ export default function WalkSearchDetailRequest() {
   return (
     <div className="flex flex-col min-h-screen bg-gray-50 mt-16 px-4">
       <main className="flex-1 overflow-y-auto w-full">
-        <h2 className="text-xl font-bold text-center mb-6">この内容で申請しますか？</h2>
+        <h2 className="text-xl font-bold text-center mb-6">
+          この内容で申請しますか？
+        </h2>
         <div className="bg-gray-100 p-4 rounded-lg shadow-lg">
           <h3 className="text-lg font-semibold mb-2">日時</h3>
           <p className="text-sm text-gray-700">
@@ -87,6 +96,14 @@ export default function WalkSearchDetailRequest() {
               {dog.name} / {dog.breed} / {dog.age}歳 / {dog.gender}
             </p>
           ))}
+
+          {/* ポイント数の表示 */}
+          <div className="mt-4 text-sm text-gray-700 flex items-center">
+            <div className="w-6 h-6 bg-[#75A05A] text-white font-bold rounded-full flex items-center justify-center mr-2">
+              P
+            </div>
+            <span>必要ポイント: {walkDetail.points_required}</span>
+          </div>
         </div>
 
         <div className="flex justify-center mt-8">

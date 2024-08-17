@@ -41,16 +41,6 @@ export default function UserWalkListPage() {
     setIsPageLoaded(true); // ページがロードされたことをマーク
   }, [isAuthenticated]);
 
-  useEffect(() => {
-    if (isPageLoaded) {
-      // ページロード後にフッターを表示
-      const layoutFooter = document.querySelector("footer");
-      if (layoutFooter) {
-        layoutFooter.style.display = "flex"; // フッターを再表示
-      }
-    }
-  }, [isPageLoaded]); // ページロード後にフッターを再表示
-
   return (
     <div className="flex flex-col min-h-screen bg-gray-50">
       {/* ヘッダー */}
@@ -82,4 +72,3 @@ export default function UserWalkListPage() {
     </div>
   );
 }
-
